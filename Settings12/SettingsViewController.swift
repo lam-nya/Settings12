@@ -8,6 +8,7 @@
 import UIKit
 
 struct Setting {
+    let icon: UIImage?
     let name: String
     let switcher: Bool
     let additionalText: String?
@@ -15,10 +16,27 @@ struct Setting {
 }
 
 class SettingsRows {
-    static func getSettings() -> [Setting] {
+    static func getSettings() -> [[Setting]] {
         let settings = [
-            Setting(name: "Авиарежим", switcher: true, additionalText: nil, arrow: nil),
-            Setting(name: "Wi-Fi", switcher: false, additionalText: "WeLoveYou5TimesMore", arrow: UIImage(named: "forward"))
+            [
+                Setting(icon: UIImage(named: "airplane"), name: "Авиарежим", switcher: true, additionalText: nil, arrow: nil),
+                Setting(icon: UIImage(named: "wifi"), name: "Wi-Fi", switcher: false, additionalText: "WeLoveYou5TimesMore", arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "bluetooth"), name: "Bluetooth", switcher: false, additionalText: "Вкл.", arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "cellular"), name: "Сотовая связь", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "hotspot"), name: "Режим модема", switcher: false, additionalText: "Выкл.", arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "vpn"), name: "VPN", switcher: false, additionalText: "Не подключено", arrow: UIImage(named: "forward"))
+            ],
+            [
+                Setting(icon: UIImage(named: "notification"), name: "Уведомления", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "sound"), name: "Звукки, тактильные сигналы", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "focus"), name: "Фокусирование", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "displayTime"), name: "Экраанное время", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+            ],
+            [
+                Setting(icon: UIImage(named: "general"), name: "Основные", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "control"), name: "Пункт управления", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+                Setting(icon: UIImage(named: "display"), name: "Экран и яркость", switcher: false, additionalText: nil, arrow: UIImage(named: "forward")),
+            ]
         ]
         return settings
     }
@@ -32,20 +50,27 @@ class SettingTableViewCell: UITableViewCell {
         self.contentView.addSubview(settingNameLabel)
         self.contentView.addSubview(additionalTextLabel)
         self.contentView.addSubview(arrowImageView)
+        self.contentView.addSubview(switcherElement)
+
 
         settingImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
-        settingImageView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor).isActive = true
+        settingImageView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 10).isActive = true
+        settingImageView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        settingImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
 
         settingNameLabel.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
-        settingNameLabel.leftAnchor.constraint(equalTo: settingImageView.rightAnchor).isActive = true
+        settingNameLabel.leftAnchor.constraint(equalTo: settingImageView.rightAnchor, constant: 10).isActive = true
 
         arrowImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
-        arrowImageView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor).isActive = true
-        arrowImageView.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        arrowImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
+        arrowImageView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
+        arrowImageView.heightAnchor.constraint(equalToConstant: 14).isActive = true
+        arrowImageView.widthAnchor.constraint(equalToConstant: 14).isActive = true
 
         additionalTextLabel.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
         additionalTextLabel.rightAnchor.constraint(equalTo: arrowImageView.leftAnchor).isActive = true
+
+        switcherElement.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
+        switcherElement.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
     }
 
     required init?(coder: NSCoder) {
@@ -64,6 +89,15 @@ class SettingTableViewCell: UITableViewCell {
             if let arrow = settingItem.arrow {
                 arrowImageView.image = arrow
             }
+
+            if !settingItem.switcher {
+                switcherElement.isHidden = true
+            }
+
+            if let icon = settingItem.icon {
+                settingImageView.image = icon
+            }
+            
         }
     }
 
@@ -73,16 +107,24 @@ class SettingTableViewCell: UITableViewCell {
         return image
     }()
 
+    var switcherElement: UISwitch = {
+        let switcher = UISwitch()
+        switcher.isOn = false
+
+        switcher.translatesAutoresizingMaskIntoConstraints = false
+        return switcher
+    }()
+
     let settingNameLabel: UILabel = {
         let label = UILabel()
-        label.font = label.font.withSize(14)
+        label.font = label.font.withSize(13)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     let additionalTextLabel: UILabel = {
         let label = UILabel()
-        label.font = label.font.withSize(14)
+        label.font = label.font.withSize(13)
         label.textColor = .lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -94,12 +136,6 @@ class SettingTableViewCell: UITableViewCell {
         return image
     }()
 
-//    let containerView: UIView = {
-//        let view = UIView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.clipsToBounds = true
-//        return view
-//    }()
 }
 
 class SettingsViewController: UIViewController {
@@ -119,10 +155,6 @@ class SettingsViewController: UIViewController {
         setupTableView()
     }
 
-//    override func loadView() {
-//        setupTableView()
-//    }
-
     func setupTableView() {
         view.addSubview(settingsTableView)
 
@@ -133,7 +165,6 @@ class SettingsViewController: UIViewController {
         settingsTableView.rightAnchor.constraint(equalTo: safeArea.rightAnchor).isActive = true
 
         settingsTableView.register(SettingTableViewCell.self, forCellReuseIdentifier: "cell")
-//        settingsTableView.rowHeight = 44
         settingsTableView.dataSource = self
 
     }
@@ -142,17 +173,17 @@ class SettingsViewController: UIViewController {
 extension SettingsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return settings.count
+        return settings[section].count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = settingsTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingTableViewCell
-        cell.setting = settings[indexPath.row]
+        cell.setting = settings[indexPath.section][indexPath.row]
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return settings.count
     }
 
 }
