@@ -42,6 +42,22 @@ class SettingsRows {
     }
 }
 
+class HeaderTableViewCell: UITableViewHeaderFooterView {
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: "headerCell")
+
+        self.contentView.addSubview(headerView)
+
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+    let headerView = UIView()
+
+}
+
 class SettingTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: "cell")
@@ -147,7 +163,6 @@ class SettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         title = "Settings"
         view.backgroundColor = .systemGray6
@@ -158,6 +173,8 @@ class SettingsViewController: UIViewController {
     func setupTableView() {
         view.addSubview(settingsTableView)
 
+        settingsTableView.register(HeaderTableViewCell.self, forHeaderFooterViewReuseIdentifier: "headerCell")
+
         settingsTableView.translatesAutoresizingMaskIntoConstraints = false
         settingsTableView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
         settingsTableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
@@ -166,11 +183,11 @@ class SettingsViewController: UIViewController {
 
         settingsTableView.register(SettingTableViewCell.self, forCellReuseIdentifier: "cell")
         settingsTableView.dataSource = self
-
+        settingsTableView.delegate = self
     }
 }
 
-extension SettingsViewController: UITableViewDataSource {
+extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return settings[section].count
@@ -184,6 +201,15 @@ extension SettingsViewController: UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return settings.count
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            print("You have pressed: \(settings[indexPath.section][indexPath.row].name)")
+    }
+
+    internal func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerCell = settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "headerCell") as! HeaderTableViewCell
+        return headerCell
     }
 
 }
