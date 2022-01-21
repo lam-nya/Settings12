@@ -11,8 +11,6 @@ class SettingsViewController: UIViewController {
 
     var safeArea: UILayoutGuide!
     var settingsTableView = UITableView(frame: CGRect.zero, style: .grouped)
-    let settings = Setting.getSettings()
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +23,9 @@ class SettingsViewController: UIViewController {
 
         view = settingsTableView
 
-        settingsTableView.register(SettingTableViewCell.self, forCellReuseIdentifier: "cell")
+        settingsTableView.register(TextTableCellView.self, forCellReuseIdentifier: "TextCell")
+        settingsTableView.register(ExtendedTableCellView.self, forCellReuseIdentifier: "ExtendedCell")
+        settingsTableView.register(SwitcherTableCellView.self, forCellReuseIdentifier: "SwitcherCell")
         settingsTableView.dataSource = self
         settingsTableView.delegate = self
     }
@@ -39,9 +39,23 @@ extension SettingsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = settingsTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingTableViewCell
-        cell.setting = settings[indexPath.section][indexPath.row]
-        return cell
+        let currentCell = settings[indexPath.section][indexPath.row]
+        switch currentCell.cellType {
+            case .SwitcherTableCellView:
+                let cell = settingsTableView.dequeueReusableCell(withIdentifier: "SwitcherCell", for: indexPath) as! SwitcherTableCellView
+                cell.configure(with: currentCell)
+                return cell
+            case .ExtendedTableCellView:
+                let cell = settingsTableView.dequeueReusableCell(withIdentifier: "ExtendedCell", for: indexPath) as! ExtendedTableCellView
+                cell.configure(with: currentCell)
+        
+                return cell
+            case .TextTableCellView:
+                let cell = settingsTableView.dequeueReusableCell(withIdentifier: "TextCell", for: indexPath) as! TextTableCellView
+                cell.configure(with: currentCell)
+                return cell
+        }
+
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
