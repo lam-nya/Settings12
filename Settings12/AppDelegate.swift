@@ -19,8 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settingsNavigationController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = settingsNavigationController
         window?.makeKeyAndVisible()
+        
         return true
-
     }
 
 }
